@@ -4,6 +4,10 @@ const modalForm = document.querySelector('.modal__form');
 const modalCheckbox = document.querySelector('.modal__checkbox');
 const modalDiscount = document.querySelector('.modal__input_discount');
 const table = document.querySelector('.table__body');
+const addBtn = document.querySelector('.panel__add-goods');
+const overlay = document.querySelector('.overlay');
+const modalCloseBtn = document.querySelector('.modal__close');
+const modalWindow = document.querySelector('.modal');
 
 const goods = [
   {
@@ -97,3 +101,24 @@ const renderGoods = (arr) => {
 };
 
 renderGoods(goods);
+
+const openModal = () => {
+  overlay.classList.add('active');
+};
+const closeModal = () => {
+  overlay.classList.remove('active');
+};
+
+const eventListeners = () => {
+  addBtn.addEventListener('click', openModal);
+
+  overlay.addEventListener('click', (event) => {
+    if (
+      event.target.closest('.modal') != modalWindow ||
+      event.target.closest('.modal__close') === modalCloseBtn
+    ) {
+      closeModal();
+    }
+  });
+};
+eventListeners();
