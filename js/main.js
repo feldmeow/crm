@@ -72,10 +72,10 @@ const goods = [
   },
 ];
 
-const createRow = (obj) => {
+const createRow = (obj, index) => {
   const newElem = document.createElement('tr');
   newElem.innerHTML = `
-    <td class="table__cell">${obj.id}</td>
+    <td class="table__cell">${index + 1}</td>
     <td class="table__cell table__cell_left table__cell_name" data-id="24601654816512">
       <span class="table__cell-id">id: 24601654816512</span>
       ${obj.title}
@@ -95,8 +95,9 @@ const createRow = (obj) => {
 };
 
 const renderGoods = (arr) => {
-  arr.forEach((el) => {
-    table.append(createRow(el));
+  table.innerHTML = '';
+  arr.forEach((el, index) => {
+    table.append(createRow(el, index));
   });
 };
 
@@ -114,10 +115,24 @@ const eventListeners = () => {
 
   overlay.addEventListener('click', (event) => {
     if (
-      event.target.closest('.modal') != modalWindow ||
-      event.target.closest('.modal__close') === modalCloseBtn
+      event.target.closest('.modal') ||
+      event.target.closest('.modal__close')
     ) {
       closeModal();
+    }
+  });
+
+  table.addEventListener('click', (e) => {
+    const target = e.target;
+    const deleteBtn = Array.from(
+      document.getElementsByClassName('table__btn_del')
+    );
+    if (target.closest('.table__btn_del')) {
+      const index = deleteBtn.indexOf(target);
+      target.closest('tr').remove();
+      goods.splice(index, 1);
+      console.log(goods);
+      renderGoods(goods);
     }
   });
 };
