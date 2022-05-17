@@ -8,7 +8,12 @@ const addBtn = document.querySelector('.panel__add-goods');
 const overlay = document.querySelector('.overlay');
 const modalCloseBtn = document.querySelector('.modal__close');
 const modalWindow = document.querySelector('.modal');
-
+const modalInputs = document.querySelectorAll('.modal__input');
+const vendorIdSpan = document.querySelector('.vendor-code__id');
+const totalPriceSpan = document.querySelector('.crm__total-price');
+const modalTotalPrice = document.querySelector('.modal__total-price');
+let vendorId;
+// массив с объектами
 const goods = [
   {
     id: 1,
@@ -72,12 +77,17 @@ const goods = [
   },
 ];
 
+// создание строки
 const createRow = (obj, index) => {
   const newElem = document.createElement('tr');
   newElem.innerHTML = `
     <td class="table__cell">${index + 1}</td>
-    <td class="table__cell table__cell_left table__cell_name" data-id="24601654816512">
-      <span class="table__cell-id">id: 24601654816512</span>
+    <td class="table__cell table__cell_left table__cell_name" data-id="${
+      obj.vendorId ? obj.vendorId : 24601654816512
+    }">
+      <span class="table__cell-id">id: ${
+        obj.vendorId ? obj.vendorId : 24601654816512
+      }</span>
       ${obj.title}
     </td>
     <td class="table__cell table__cell_left">${obj.category}</td>
@@ -93,29 +103,54 @@ const createRow = (obj, index) => {
   `;
   return newElem;
 };
-
+const generateId = () => {
+  const num = Math.round(Math.random() * 99999999999999);
+  return num;
+};
+const calculateTotalPrice = (arr) => {
+  let totalPrice = 0;
+  arr.forEach((el) => {
+    totalPrice += el.price * el.count;
+  });
+  return totalPrice;
+};
+// рендер
 const renderGoods = (arr) => {
+  totalPriceSpan.textContent = '';
   table.innerHTML = '';
   arr.forEach((el, index) => {
     table.append(createRow(el, index));
   });
+  totalPriceSpan.textContent = '$ ' + calculateTotalPrice(goods);
 };
 
 renderGoods(goods);
 
 const openModal = () => {
   overlay.classList.add('active');
-};
-const closeModal = () => {
-  overlay.classList.remove('active');
+  vendorId = generateId();
+  vendorIdSpan.textContent = vendorId;
+  modalForm.total.value = '$ 0';
 };
 
+const closeModal = () => {
+  overlay.classList.remove('active');
+  clearInputs(modalInputs);
+};
+
+const clearInputs = (nodeList) => {
+  nodeList.forEach((item) => {
+    item.value = '';
+  });
+};
+
+// евентеры
 const eventListeners = () => {
   addBtn.addEventListener('click', openModal);
 
   overlay.addEventListener('click', (event) => {
     if (
-      event.target.closest('.modal') ||
+      !event.target.closest('.modal') ||
       event.target.closest('.modal__close')
     ) {
       closeModal();
@@ -135,5 +170,30 @@ const eventListeners = () => {
       renderGoods(goods);
     }
   });
+  modalForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(e.target));
+    formData.vendorId = vendorId;
+    goods.push(formData);
+    renderGoods(goods);
+    clearInputs(modalInputs);
+    closeModal();
+  });
+
+  modalForm.discount.addEventListener('change', () => {
+    if (modalForm.discount.checked) modalForm.discount_count.disabled = 0;
+    else modalForm.discount_count.disabled = 1;
+  });
+
+  modalForm.addEventListener(
+    'focus',
+    () => {
+      modalForm.count === 0
+        ? (modalForm.total.value = '$ ' + modalForm.price.value)
+        : (modalForm.total.value =
+            '$ ' + modalForm.price.value * modalForm.count.value);
+    },
+    true
+  );
 };
 eventListeners();
