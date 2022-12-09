@@ -186,7 +186,7 @@ const eventListeners = () => {
   });
 
   modalForm.addEventListener(
-    'focus',
+    'change',
     () => {
       modalForm.count === 0
         ? (modalForm.total.value = '$ ' + modalForm.price.value)
