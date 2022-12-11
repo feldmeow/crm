@@ -160,7 +160,7 @@ const eventListeners = () => {
   table.addEventListener('click', (e) => {
     const target = e.target;
     const deleteBtn = Array.from(
-      document.getElementsByClassName('table__btn_del')
+      document.getElementsByClassName('table__btn_del'),
     );
     if (target.closest('.table__btn_del')) {
       const index = deleteBtn.indexOf(target);
@@ -193,7 +193,7 @@ const eventListeners = () => {
         : (modalForm.total.value =
             '$ ' + modalForm.price.value * modalForm.count.value);
     },
-    true
+    true,
   );
 };
 eventListeners();
